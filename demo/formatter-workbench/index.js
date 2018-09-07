@@ -42,7 +42,6 @@ var tutTOC = [
 window.onload = function() {
     var NEW = '(New)';
     var isCamelCase = /[a-z][A-Z]/;
-    var DANGER_COLOR = '#cb2431', DISABLED_COLOR = 'rgb(204, 204, 204)';
     var saveFuncs = {
         editor: saveCellEditor,
         localizer: saveLocalizer
@@ -95,7 +94,7 @@ window.onload = function() {
     });
 
     document.getElementById('reset-all').onclick = function() {
-        if (confirm('Clear localStorage and reload?')) {
+        if (confirm('Clear localStorage and reload?\n\nThis will reset all tabs to their default values, removing all edits, including new custom localizers and custom cell editors.')) {
             localStorage.clear();
             location.reload();
         }
@@ -149,20 +148,18 @@ window.onload = function() {
             methodName = 'set' + capitalize(type);
         }
 
-        var el = document.getElementById(type); // tab editor's textarea element
-        var value;
-
-        if (el.value) {
-            value = el.value;
-        } else if ((value = localStorage.getItem(type))) {
-            el.value = value;
-        } else {
-            localStorage.setItem(type, el.value = value = stringifyAndUnquoteKeys(defaults[type]));
+        var texEl = document.getElementById(type); // tab editor's textarea element
+        if (!texEl.value && !(texEl.value = localStorage.getItem(type))) {
+            localStorage.setItem(type, texEl.value = stringifyAndUnquoteKeys(defaults[type]));
         }
+        texEl.oninput = function() {
+            resetEl.firstElementChild.classList.toggle('disabled', texEl.value === localStorage.getItem(type));
+        };
 
         // We're using eval here instead of JSON.parse because we want to allow unquoted keys.
         // Note: L-value must be inside eval because R-value beginning with '{' is eval'd as BEGIN block.
-        eval('value =' + value);
+        var value;
+        eval('value =' + texEl.value);
 
         if (methodName === 'setData') {
             grid.setData(value, { schema: [] });
@@ -172,10 +169,13 @@ window.onload = function() {
         }
 
         if (confirmation) {
-            feedback(el.parentElement, confirmation);
+            feedback(texEl.parentElement, confirmation);
         }
 
-        document.getElementById('reset-' + type).onclick = resetTextEditor;
+        var resetEl = document.getElementById('reset-' + type);
+        texEl.oninput();
+        resetEl.onclick = resetTextEditor;
+
     }
 
     function resetTextEditor() {
@@ -192,7 +192,9 @@ window.onload = function() {
         var name = document.getElementById(type + '-dropdown').value;
         if (!isDisabled(this) && confirm('Reset the "' + name + '" ' + type + ' to its default?')) {
             var script = getDefaultScript(type, name);
-            localStorage.setItem(type + '_' + name, script);
+            if (name !== NEW) {
+                localStorage.setItem(type + '_' + name, script);
+            }
             document.getElementById(type + '-script').value = script;
             enableResetAndDeleteIcons(type, name);
         }
@@ -212,7 +214,7 @@ window.onload = function() {
 
     function isDisabled(el) {
         var svg = el.firstElementChild;
-        return window.getComputedStyle(svg).color === DISABLED_COLOR;
+        return svg.classList.contains('disabled');
     }
 
     function capitalize(str) {
@@ -264,21 +266,29 @@ window.onload = function() {
 
         // STEP 3: Reset drop-down to first item: "(New)"
         dropdownEl.selectedIndex = 0;
-        enableResetAndDeleteIcons(type); // hides icons
+        enableResetAndDeleteIcons(type, NEW);
 
         // STEP 4: Assign handlers
         resetEl.onclick = resetObject;
         deleteEl.onclick = deleteObject;
 
+        var name = NEW;
         dropdownEl.onchange = function() {
-            var name = this.value;
+            var newName = this.value;
+            var savedScript = localStorage.getItem(prefix + name) || getDefaultScript(type, name);
+            var editedScript = document.getElementById(type + '-script').value;
 
-            if (name === NEW) {
-                scriptEl.value = newScript;
-                enableResetAndDeleteIcons(type);
-            } else {
-                scriptEl.value = localStorage.getItem(prefix + name);
-                enableResetAndDeleteIcons(type, name);
+            if (!savedScript || savedScript === editedScript || confirm('Discard unsaved changes?')) {
+                name = newName;
+                if (name === NEW) {
+                    scriptEl.value = newScript;
+                    enableResetAndDeleteIcons(type);
+                } else {
+                    scriptEl.value = localStorage.getItem(prefix + name);
+                    enableResetAndDeleteIcons(type, name);
+                }
+            } else if (savedScript) {
+                this.value = name;
             }
         };
 
@@ -296,20 +306,14 @@ window.onload = function() {
         var resetEl = document.getElementById('reset-' + type);
         var deleteEl = document.getElementById('delete-' + type);
 
-        deleteEl.style.display = resetEl.style.display = name ? null : 'none'; // null means revert to start value
-
         if (name) {
             var defaultScript = name && getDefaultScript(type, name);
-            var alteredFromDefault = defaultScript && defaultScript !== document.getElementById(type + '-script').value;
+            var editedScript = document.getElementById(type + '-script').value;
+            var alteredFromDefault = defaultScript && defaultScript !== editedScript;
 
-            disable(resetEl, !alteredFromDefault);
-            disable(deleteEl, !name || defaultScript);
+            resetEl.firstElementChild.classList.toggle('disabled', !alteredFromDefault);
+            deleteEl.firstElementChild.classList.toggle('disabled', !name || defaultScript);
         }
-    }
-
-    function disable(el, disabled) {
-        el.firstElementChild.style.color = disabled ? DISABLED_COLOR : DANGER_COLOR;
-        el.style.cursor = disabled ? 'no-drop' : 'pointer';
     }
 
     function getDefaultScript(type, name) {

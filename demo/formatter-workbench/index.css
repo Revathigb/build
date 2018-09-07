@@ -85,3 +85,18 @@ input[type=button].danger:active {
 .divider:active {
     border-top: 4px solid #888;
 }
+svg.dangerous-button {
+    color: #cb2431;
+    fill: currentColor;
+    vertical-align: middle;
+    cursor: pointer;
+}
+svg.dangerous-button.disabled {
+    color: #aaa;
+    cursor: no-drop;
+}
+svg.dangerous-button:not(.disabled):hover {
+    color: red;
+    background-color: yellow;
+    border-radius: 1em;
+}

@@ -220,3 +220,8 @@ span.tab {
 span.tab:hover {
     box-shadow: 0.15em 0.15em 0.3em #666;
 }
+svg.dangerous-button {
+     color: #cb2431;
+     fill: currentColor;
+     vertical-align: middle;
+ }

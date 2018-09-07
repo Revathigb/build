@@ -65,13 +65,9 @@ Tutorial.prototype = {
         document.getElementById('page-number').innerText = document.getElementById('page-control').value = this.pageNum;
 
         // hide the prev button on next page
-        var classList = document.getElementById('page-prev').classList;
-        var method = this.pageNum === 1 ? 'remove' : 'add';
-        classList[method]('page-button-enabled-prev');
+        document.getElementById('page-prev').classList.toggle('page-button-enabled-prev', this.pageNum !== 1);
 
         // hide the next button on last page
-        classList = document.getElementById('page-next').classList;
-        method = this.pageNum === this.toc.length ? 'remove' : 'add';
-        classList[method]('page-button-enabled-next');
+        document.getElementById('page-next').classList.toggle('page-button-enabled-next', this.pageNum !== this.toc.length);
     }
 };
