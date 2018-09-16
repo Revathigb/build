@@ -9,32 +9,7 @@ window.addEventListener('load', function() {
         return;
     }
 
-    document.addEventListener('keydown', function(e) {
-        switch (e.key) {
-            case 'ArrowLeft':
-            case 'ArrowRight':
-                window.top.document.dispatchEvent(new KeyboardEvent('keydown', { key: e.key }));
-        }
-    });
-
-    document.addEventListener('scroll', setScrollWarning);
-
-    var snippets = document.getElementsByClassName('snippet'),
-        hasSnippets = snippets.length > 0,
-        tabBar = window.top.tutorial.tabBar,
-        snippetTabName = 'Code Snippets';
-
-    tabBar.toggle(snippetTabName, hasSnippets);
-
-    if (hasSnippets) {
-        window.top.snippetOnLoad = function() {
-            var body = this.document.body;
-            Array.prototype.slice.call(snippets).forEach(function (el) {
-                body.appendChild(el);
-            });
-        };
-        tabBar.getTab(snippetTabName).querySelector('iframe').contentWindow.location.reload();
-    }
+    parent.dispatchEvent(new CustomEvent('curvy-tabs-pager-register', { detail: { window: window }}));
 
     function setScrollWarning() {
         var i = window.scrollY + window.innerHeight - document.body.scrollHeight;

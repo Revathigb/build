@@ -67,23 +67,34 @@ window.onload = function() {
 
     grid = new fin.Hypergrid();
 
-    var tabBars = document.querySelectorAll('.curvy-tabs-container');
-
-    tabBar = new CurvyTabs(tabBars[0]);
+    tabBar = new CurvyTabs(document.getElementById('editors'));
     tabBar.paint();
 
-    var flatTOC = [];
+    var pagerOptions = { path: 'tutorial/', toc: [] };
+
+    // flatten the hierarchical tutTOC into pagerOptions.toc
     walk(tutTOC);
     function walk(list) {
         list.forEach(function(item) {
             if (Array.isArray(item)) {
                 walk(item);
             } else {
-                flatTOC.push(item);
+                pagerOptions.toc.push(item);
             }
         });
     }
-    tutorial = new Tutorial(tabBars[1], 'tutorial/', flatTOC);
+
+    // If there is a page number cookie value, use it!
+    var match = document.cookie.match(/\bp=(\d+)/);
+    if (match) {
+        pagerOptions.startPage = match[1];
+    }
+
+    tutorial = new CurvyTabsPager(
+        document.getElementById('page-panel'),
+        new CurvyTabs(document.getElementById('tutorial')),
+        pagerOptions
+    );
 
     callApi('data'); // inits both 'data' and 'state' editors
 
