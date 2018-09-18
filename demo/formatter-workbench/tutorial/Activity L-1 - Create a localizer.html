@@ -6,16 +6,16 @@
   <script src="index.js"></script>
 </head>
 <body>
-<h2 class="continued"><em>Localizers</em> tab</h2>
+<h2 class="continued">Localizers</h2>
 
 The following Activity creates a simple localizer from scratch.
 
 <p>Be sure to see the <span class="tab">Code Snippets</span> tab for insights into how to do this <em>programmatically</em> (in code, outside of this workbench).</p>
 
 <article class="activity">
-  <header><div>7</div>Define, register, and bind a new localizer</header>
+  <header><div>L-1</div>Define, register, and bind a new localizer</header>
   <section>
-    <h3>7.1: Define</h3>
+    <h3>1. Define</h3>
     <ol>
       <li>Switch to the <span class="tab">Localizers</span> tab</li>
       <li>Select <strong>(New)</strong> from the <em>Load localizer</em> drop-down</li>
@@ -37,7 +37,7 @@ The following Activity creates a simple localizer from scratch.
     parse: function(str) { return parseFloat(str); }
 }</pre>
 
-    <h3>7.3: Register</h3>
+    <h3>2. Register</h3>
     Now register your new localizer with the grid:
     <ol start="6">
       <li>Click the <span class="api-button">grid.localization.add(…)</span> button.</li>
@@ -46,7 +46,7 @@ The following Activity creates a simple localizer from scratch.
 
     <p>A localizer can also be registered programmatically by calling <code>add</code> in your code. (See the <span class="tab">Code Snippets</span> tab.)</p>
 
-    <h3>7.3: Bind</h3>
+    <h3>3. Bind</h3>
 
     Once a localizer is registered in the grid, it can be bound to a cell (or column, <i>etc.</i>), by name, through its
     <a target="doc" href="https://fin-hypergrid.github.io/core/doc/localizerInterface.html#format" class="code">format</a> property.
@@ -64,7 +64,7 @@ The following Activity creates a simple localizer from scratch.
 
     The property can also be set programmatically. (See the <span class="tab">Code Snippets</span> tab.)
 
-    <h3>7.4: Update</h3>
+    <h3>4. Update</h3>
     The <span class="api-button">grid.localization.add(…)</span> button can also be used to update a localizer already known to the grid.
     <p>For example, to line up the figures in the <code>prevclose</code> column, adjust the formatter:
 
@@ -92,7 +92,7 @@ Because we’re using <em>loose binding</em>, the cell’s <code>format</code> p
 On the next page we discuss cell editors.
 
 <div class="curvy-tab-conditional" name="Code Snippets">
-  <h2 class="continued">Localizers tab</h2>
+  <h2 class="continued">Localizers</h2>
 
   The code snippets below accomplish <em>programmatically</em> the same objective as <strong>Activity 7</strong> in the <span class="tab">Tutorial</span> tab.
 

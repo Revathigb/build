@@ -11,145 +11,180 @@ var tutTOC = [
         'The Editor Section.html',
         'The Tutorial Section.html'
     ],
-    'The Data Tab (Activity 1).html',
+    'The Data tab.html',
     [
-        'Activity 2.html',
-        'Activity 3.html'
+        'Activity D-1 - Edit a cell value in the grid.html',
+        'Activity D-2 - Edit a cell value in the Data editor.html',
+        'Activity D-3 - Add a row in the Data editor.html'
     ],
-    'The State Tab (Activity 4).html',
+    'The State tab.html',
     [
+        'Activity S-1 - Edit a grid property',
         'Properties Basics.html',
-        'Activity 5.html'
+        'Activity S-2 - Edit a column property.html'
     ],
     'The Localizers Tab.html',
     [
-        'Activity 6.html',
+        'Activity S-3 - Bind a cell to a localizer.html',
         'Adding a new localizer.html',
-        'Activity 7.html'
+        'Activity L-1 - Create a localizer.html'
     ],
-    'The Cell Editors Tab (Activity 8).html',
+    'The Cell Editors tab.html',
     [
-        'Activity 9.html'
+        'Activity CE-1 - Edit a cell without a localizer.html',
+        'Activity CE-2 - Edit a cell with a localizer.html'
     ],
     'Validation.html',
     [
         'The parse() method.html',
         'The invalid() method.html',
-        'Activity 10 - Returning parsing errors.html'
+        'Activity CE-3 - Returning parsing errors.html'
     ]
 ];
 
 window.onload = function() {
     var NEW = '(New)';
     var isCamelCase = /[a-z][A-Z]/;
+    var isJSON = /^[[{]/;
     var saveFuncs = {
         editor: saveCellEditor,
         localizer: saveLocalizer
     };
-    var defaults = {
-        data: [
-            { symbol: 'APPL', name: 'Apple Inc.', prevclose: 93.13, change: -.0725 },
-            { symbol: 'MSFT', name: 'Microsoft Corporation', prevclose: 51.91, change: .0125 },
-            { symbol: 'TSLA', name: 'Tesla Motors Inc.', prevclose: 196.40, change: .08 },
-            { symbol: 'IBM', name: 'International Business Machines Corp', prevclose: 155.35, change: -.02375 }
-        ],
-        state: {
-            showRowNumbers: false, // override the default (true)
-            editable: true, // included here for clarity; this is the default value
-            editor: 'Textfield', // override the default (undefined)
-            columns: {
-                prevclose: {
-                    halign: 'right'
-                }
-            }
-        }
+    window.defaults = {
+        data: '../data/four-stocks.json',
+        state: 'defaults/state.json',
+        scrollbars: 'defaults/scrollbars.css'
     };
 
-    grid = new fin.Hypergrid();
+    Array.prototype.forEach.call(document.getElementsByClassName('reset-button'), function(el) {
+        el.innerHTML = '<svg viewBox="0 0 32 32" version="1.1" width="22" height="22"><path d="M 15.5 2.09375 L 14.09375 3.5 L 16.59375 6.03125 C 16.394531 6.019531 16.203125 6 16 6 C 10.5 6 6 10.5 6 16 C 6 17.5 6.304688 18.894531 6.90625 20.09375 L 8.40625 18.59375 C 8.207031 17.792969 8 16.898438 8 16 C 8 11.601563 11.601563 8 16 8 C 16.175781 8 16.359375 8.019531 16.53125 8.03125 L 14.09375 10.5 L 15.5 11.90625 L 19.71875 7.71875 L 20.40625 7 L 19.71875 6.28125 Z M 25.09375 11.90625 L 23.59375 13.40625 C 23.894531 14.207031 24 15.101563 24 16 C 24 20.398438 20.398438 24 16 24 C 15.824219 24 15.640625 23.980469 15.46875 23.96875 L 17.90625 21.5 L 16.5 20.09375 L 12.28125 24.28125 L 11.59375 25 L 12.28125 25.71875 L 16.5 29.90625 L 17.90625 28.5 L 15.40625 25.96875 C 15.601563 25.980469 15.804688 26 16 26 C 21.5 26 26 21.5 26 16 C 26 14.5 25.695313 13.105469 25.09375 11.90625 Z "></path></svg>';
+    });
+
+    Array.prototype.forEach.call(document.getElementsByClassName('delete-button'), function(el) {
+        el.innerHTML = '<svg viewBox="0 0 12 16" version="1.1" width="12" height="16"><path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path></svg>';
+    });
 
     tabBar = new CurvyTabs(document.getElementById('editors'));
     tabBar.paint();
 
-    var pagerOptions = { path: 'tutorial/', toc: [] };
+    getFiles(init);
 
-    // flatten the hierarchical tutTOC into pagerOptions.toc
-    walk(tutTOC);
-    function walk(list) {
-        list.forEach(function(item) {
-            if (Array.isArray(item)) {
-                walk(item);
-            } else {
-                pagerOptions.toc.push(item);
+    function init() {
+        grid = new fin.Hypergrid();
+
+        initLocalsButtons();
+
+        var pagerOptions = {path: 'tutorial/', toc: []};
+
+        // flatten the hierarchical tutTOC into pagerOptions.toc
+        walk(tutTOC);
+        function walk(list) {
+            list.forEach(function (item) {
+                if (Array.isArray(item)) {
+                    walk(item);
+                } else {
+                    pagerOptions.toc.push(item);
+                }
+            });
+        }
+
+        // If there is a page number cookie value, use it!
+        var match = document.cookie.match(/\bp=(\d+)/);
+        if (match) {
+            pagerOptions.startPage = match[1];
+        }
+
+        tutorial = new CurvyTabsPager(
+            document.getElementById('page-panel'),
+            new CurvyTabs(document.getElementById('tutorial')),
+            pagerOptions
+        );
+
+        callApi('data'); // inits both 'data' and 'state' editors
+        callApi('scrollbars');
+
+        Object.keys(scripts).forEach(function(key) {
+            initObjectEditor(key);
+        });
+
+        document.getElementById('reset-all').onclick = function() {
+            if (confirm('Clear localStorage and reload?\n\nThis will reset all tabs to their default values, removing all edits, including new custom localizers and custom cell editors.')) {
+                localStorage.clear();
+                location.reload();
             }
+        };
+
+        grid.addEventListener('fin-after-cell-edit', function(e) {
+            document.getElementById('data').value = stringifyAndUnquoteKeys(grid.behavior.getData());
+        });
+
+        var dragger, divider = document.querySelector('.divider');
+        divider.addEventListener('mousedown', function(e) {
+            dragger = {
+                delta: e.clientY - divider.getBoundingClientRect().top,
+                gridHeight: grid.div.getBoundingClientRect().height,
+                tabHeight: tabBar.container.getBoundingClientRect().height
+            };
+            e.stopPropagation(); // no other element needs to handle
+        });
+        document.addEventListener('mousemove', function(e) {
+            if (dragger) {
+                var newDividerTop = e.clientY - dragger.delta,
+                    oldDividerTop = divider.getBoundingClientRect().top,
+                    topDelta = newDividerTop - oldDividerTop,
+                    newGridHeight = dragger.gridHeight + topDelta,
+                    newTabHeight = dragger.tabHeight - topDelta;
+
+                if (newGridHeight >= 65 && newTabHeight >= 130) {
+                    divider.style.borderTopStyle = divider.style.borderTopColor = null; // revert to :active style
+                    divider.style.top = newDividerTop + 'px';
+                    grid.div.style.height = (dragger.gridHeight = newGridHeight) + 'px';
+                    tabBar.container.style.height = (dragger.tabHeight = newTabHeight) + 'px';
+                } else {
+                    // force :hover style when out of range even though dragging (i.e., :active)
+                    divider.style.borderTopStyle = 'double';
+                    divider.style.borderTopColor = '#444';
+                }
+
+                e.stopPropagation(); // no other element needs to handle
+                e.preventDefault(); // no other drag effects, please
+            }
+        });
+        document.addEventListener('mouseup', function(e) {
+            dragger = undefined;
         });
     }
 
-    // If there is a page number cookie value, use it!
-    var match = document.cookie.match(/\bp=(\d+)/);
-    if (match) {
-        pagerOptions.startPage = match[1];
+    function getFiles(finish) {
+        var keys = Object.keys(defaults)
+        var callbacks = keys.length;
+        keys.forEach(function(key) {
+            ajax(defaults[key], function(data) {
+                defaults[key] = data;
+                if (!--callbacks) {
+                    finish();
+                }
+            });
+        });
     }
 
-    tutorial = new CurvyTabsPager(
-        document.getElementById('page-panel'),
-        new CurvyTabs(document.getElementById('tutorial')),
-        pagerOptions
-    );
-
-    callApi('data'); // inits both 'data' and 'state' editors
-
-    initLocalsButtons();
-
-    Object.keys(scripts).forEach(function(key) {
-        initObjectEditor(key);
-    });
-
-    document.getElementById('reset-all').onclick = function() {
-        if (confirm('Clear localStorage and reload?\n\nThis will reset all tabs to their default values, removing all edits, including new custom localizers and custom cell editors.')) {
-            localStorage.clear();
-            location.reload();
-        }
-    };
-
-    grid.addEventListener('fin-after-cell-edit', function(e) {
-        document.getElementById('data').value = stringifyAndUnquoteKeys(grid.behavior.getData());
-    });
-
-    var dragger, divider = document.querySelector('.divider');
-    divider.addEventListener('mousedown', function(e) {
-        dragger = {
-            delta: e.clientY - divider.getBoundingClientRect().top,
-            gridHeight: grid.div.getBoundingClientRect().height,
-            tabHeight: tabBar.container.getBoundingClientRect().height
-        }
-        e.stopPropagation(); // no other element needs to handle
-    });
-    document.addEventListener('mousemove', function(e) {
-        if (dragger) {
-            var newDividerTop = e.clientY - dragger.delta,
-                oldDividerTop = divider.getBoundingClientRect().top,
-                topDelta = newDividerTop - oldDividerTop,
-                newGridHeight = dragger.gridHeight + topDelta,
-                newTabHeight = dragger.tabHeight - topDelta;
-
-            if (newGridHeight >= 65 && newTabHeight >= 130) {
-                divider.style.borderTopStyle = divider.style.borderTopColor = null; // revert to :active style
-                divider.style.top = newDividerTop + 'px';
-                grid.div.style.height = (dragger.gridHeight = newGridHeight) + 'px';
-                tabBar.container.style.height = (dragger.tabHeight = newTabHeight) + 'px';
-            } else {
-                // force :hover style when out of range even though dragging (i.e., :active)
-                divider.style.borderTopStyle = 'double';
-                divider.style.borderTopColor = '#444';
+    function ajax(url, callback) {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('GET', url, true);
+        httpRequest.onreadystatechange = function() {
+            if (
+                httpRequest.readyState === 4 && // HTTP_STATE_DONE
+                httpRequest.status === 200 // HTTP_STATUS_OK
+            ) {
+                var data = httpRequest.responseText;
+                if (/\.json$/i.test(url) && isJSON.test(data)) {
+                    data = JSON.parse(data);
+                }
+                callback(data);
             }
-
-            e.stopPropagation(); // no other element needs to handle
-            e.preventDefault(); // no other drag effects, please
-        }
-    });
-    document.addEventListener('mouseup', function(e) {
-        dragger = undefined;
-    });
+        };
+        httpRequest.send(null);
+    }
 
     function callApi(methodName, type, confirmation) {
         // When `methodName` is `undefined` or omitted promote 2nd and 3rd params
@@ -159,39 +194,47 @@ window.onload = function() {
             methodName = 'set' + capitalize(type);
         }
 
-        var texEl = document.getElementById(type); // tab editor's textarea element
-        if (!texEl.value && !(texEl.value = localStorage.getItem(type))) {
-            localStorage.setItem(type, texEl.value = stringifyAndUnquoteKeys(defaults[type]));
-        }
-        texEl.oninput = function() {
-            resetEl.firstElementChild.classList.toggle('disabled', texEl.value === localStorage.getItem(type));
+        var textEl = document.getElementById(type); // tab editor's textarea element
+        var resetEl = document.getElementById('reset-' + type);
+
+        textEl.oninput = function() {
+            resetEl.firstElementChild.classList.toggle('disabled', textEl.value === stringifyAndUnquoteKeys(defaults[type]));
         };
 
-        // We're using eval here instead of JSON.parse because we want to allow unquoted keys.
-        // Note: L-value must be inside eval because R-value beginning with '{' is eval'd as BEGIN block.
-        var value;
-        eval('value =' + texEl.value);
+        if (textEl.value) {
+            localStorage.setItem(type, textEl.value);
+        } else if (!(textEl.value = localStorage.getItem(type))) {
+            textEl.value = stringifyAndUnquoteKeys(defaults[type]);
+            localStorage.setItem(type, textEl.value);
+        }
 
-        if (methodName === 'setData') {
-            grid.setData(value, { schema: [] });
-            callApi('state'); // reapply state after resetting schema (also inits state editor on first time called)
-        } else {
-            grid[methodName](value);
+        // We're using eval here instead of JSON.parse because we want to allow unquoted keys.
+        switch (type) {
+            case 'data':
+                grid.setData(eval(textEl.value), {schema: []});
+                callApi('state'); // reapply state after resetting schema (also inits state editor on first time called)
+                break;
+            case 'state':
+                // Note: L-value must be inside eval because R-value beginning with '{' is eval'd as BEGIN block.
+                var Lvalue;
+                grid[methodName](eval('Lvalue =' + textEl.value));
+                break;
+            case 'scrollbars':
+                injectCSS('custom', textEl.value);
+                break;
         }
 
         if (confirmation) {
-            feedback(texEl.parentElement, confirmation);
+            feedback(textEl.parentElement, confirmation);
         }
 
-        var resetEl = document.getElementById('reset-' + type);
-        texEl.oninput();
+        textEl.oninput();
         resetEl.onclick = resetTextEditor;
-
     }
 
     function resetTextEditor() {
         var type = this.id.replace(/^reset-/, '');
-        if (confirm('Reset the ' + capitalize(type) + ' tab editor to its default?')) {
+        if (confirm('Reset the ' + capitalize(type) + ' tab editor to its default?\n\nCAUTION: This is not an undo. It restores the editor content to the app\'s original built-in default value!')) {
             document.getElementById(type).value = '';
             localStorage.removeItem(type);
             callApi(type);
@@ -340,9 +383,11 @@ window.onload = function() {
         return match[1] || match[2] || match[3] || match[4];
     }
 
-    function stringifyAndUnquoteKeys(json) {
-        return JSON.stringify(json, undefined, 2)
-            .replace(/(  +)"([a-zA-Z$_]+)"(: )/g, '$1$2$3'); // un-quote keys
+    function stringifyAndUnquoteKeys(obj) {
+       return typeof obj === 'object'
+            ? JSON.stringify(obj, undefined, 2)
+                .replace(/(  +)"([a-zA-Z$_]+)"(: )/g, '$1$2$3') // un-quote keys
+            : obj;
     }
 
     function saveCellEditor(script, select) {
@@ -456,6 +501,22 @@ window.onload = function() {
         setTimeout(function() {
             el.style.display = 'none';
         }, 750 + 50 * confirmation.length);
+    }
+
+    function injectCSS(name, css) {
+        var prefix = 'injected-stylesheet-finbar-';
+        var id = prefix + name;
+        var el = document.getElementById(id);
+
+        if (!el) {
+            el = document.createElement('style');
+            el.setAttribute('id', id);
+        }
+
+        el.innerHTML = css;
+
+        var baseEl = document.getElementById(prefix + 'base');
+        baseEl.parentElement.insertBefore(el, baseEl.nextElementSibling);
     }
 
     window.callApi = callApi; // for access from index.html `onclick` handlers

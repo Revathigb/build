@@ -33,22 +33,24 @@ input[type=button].locals {
     color: white;
     cursor: help;
     margin: 9px;
+    border: 1px solid transparent;
     border-radius: .5em;
 }
 input[type=button].api {
     background-color: grey;
     color: white;
     font: 12px monospace;
+    border: 1px solid transparent;
     border-radius: .5em;
     padding: .33em .66em;
     margin: 6px;
     float: right;
 }
 input[type=button].locals:hover, input[type=button].api:hover {
-    background-color: #555;
+    background-color: #444;
 }
 input[type=button].locals:active, input[type=button].api:active {
-    color: #555;
+    color: #444;
     background-color: white;
     border-color: grey;
 }
@@ -85,18 +87,24 @@ input[type=button].danger:active {
 .divider:active {
     border-top: 4px solid #888;
 }
-svg.dangerous-button {
+span.reset-button > svg, span.delete-button > svg {
     color: #cb2431;
     fill: currentColor;
-    vertical-align: middle;
-    cursor: pointer;
+    position: relative;
 }
-svg.dangerous-button.disabled {
+span.reset-button > svg {
+    top: 7px;
+}
+span.delete-button > svg {
+    top: 3px;
+}
+span.reset-button > svg.disabled, span.delete-button > svg.disabled {
     color: #aaa;
     cursor: no-drop;
 }
-svg.dangerous-button:not(.disabled):hover {
+span.reset-button > svg:not(.disabled):hover, span.delete-button > svg:not(.disabled):hover {
     color: red;
     background-color: yellow;
     border-radius: 1em;
+    cursor: pointer;
 }

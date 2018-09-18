@@ -8,7 +8,7 @@
   <script src='https://fin-hypergrid.github.io/core/3.0.2/build/fin-hypergrid.js'></script>
 
   <script>var exports = {}, module = {exports:exports};</script>
-  <script src="scripts.js"></script>
+  <script src="defaults/scripts.js"></script>
   <script>var scripts = module.exports; delete window.exports; delete window.module;</script>
 
   <script src="index.js"></script>
@@ -16,8 +16,8 @@
   <!--<script src="../../../curvy-tabs/build/curvy-tabs.js"></script>-->
   <script src="https://joneit.github.io/curvy-tabs/2.3.1/build/curvy-tabs.js"></script>
 
-  <script src="../../../curvy-tabs-pager/build/curvy-tabs-pager.js"></script>
-  <!--<script src="https://joneit.github.io/curvy-tabs-pager/2.1.0/build/curvy-tabs-pager.js"></script>-->
+  <!--<script src="../../../curvy-tabs-pager/build/curvy-tabs-pager.js"></script>-->
+  <script src="https://joneit.github.io/curvy-tabs-pager/2.0.1/build/curvy-tabs-pager.js"></script>
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/solid.css" integrity="sha384-VGP9aw4WtGH/uPAOseYxZ+Vz/vaTb1ehm1bwx92Fm8dTrE+3boLfF1SpAtB1z7HW" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/fontawesome.css" integrity="sha384-1rquJLNOM3ijoueaaeS5m+McXPJCGdr5HcA03/VHXxcp2kX2sUrQDmFc3jR5i/C7" crossorigin="anonymous">
@@ -32,12 +32,8 @@
 
 <div id="editors" class="curvy-tabs-container" style="position:absolute; height:calc(100% - 250px); width:calc(50% - 16px); bottom:8px;">
   <div style="background-color:#dff" name="Data">
-    <span id="reset-data" class="reset-button" title="Reset data to default. (This icon is only enabled when data have been edited.)">
-      <svg viewBox="0 0 32 32" version="1.1" width="22" height="22" class="dangerous-button">
-        <path d="M 15.5 2.09375 L 14.09375 3.5 L 16.59375 6.03125 C 16.394531 6.019531 16.203125 6 16 6 C 10.5 6 6 10.5 6 16 C 6 17.5 6.304688 18.894531 6.90625 20.09375 L 8.40625 18.59375 C 8.207031 17.792969 8 16.898438 8 16 C 8 11.601563 11.601563 8 16 8 C 16.175781 8 16.359375 8.019531 16.53125 8.03125 L 14.09375 10.5 L 15.5 11.90625 L 19.71875 7.71875 L 20.40625 7 L 19.71875 6.28125 Z M 25.09375 11.90625 L 23.59375 13.40625 C 23.894531 14.207031 24 15.101563 24 16 C 24 20.398438 20.398438 24 16 24 C 15.824219 24 15.640625 23.980469 15.46875 23.96875 L 17.90625 21.5 L 16.5 20.09375 L 12.28125 24.28125 L 11.59375 25 L 12.28125 25.71875 L 16.5 29.90625 L 17.90625 28.5 L 15.40625 25.96875 C 15.601563 25.980469 15.804688 26 16 26 C 21.5 26 26 21.5 26 16 C 26 14.5 25.695313 13.105469 25.09375 11.90625 Z "></path>
-      </svg>
-    </span>
-    <input type="button" class="api" value="grid.setData(…)" onclick="callApi('data', 'Data has been set')"
+    <span id="reset-data" class="reset-button" title="Reset data to default. (This icon is only enabled when data have been edited.)"></span>
+    <input type="button" class="api" value="grid.setData(…)" onclick="callApi('data', 'Data set.')"
      title="Note: Actually called with options in a 2nd parameter to reset schema on every call:
 grid.setData(…, { schema: [] })">
     <span class="feedback"></span>
@@ -45,15 +41,10 @@ grid.setData(…, { schema: [] })">
   </div>
 
   <div style="background-color:#fdf" name="State">
-    <span id="reset-state" class="reset-button" style="cursor:pointer;" title="Reset this state object to default. (This icon is only enabled when state has been edited.)">
-      <svg viewBox="0 0 32 32" version="1.1" width="22" height="22" class="dangerous-button">
-        <path d="M 15.5 2.09375 L 14.09375 3.5 L 16.59375 6.03125 C 16.394531 6.019531 16.203125 6 16 6 C 10.5 6 6 10.5 6 16 C 6 17.5 6.304688 18.894531 6.90625 20.09375 L 8.40625 18.59375 C 8.207031 17.792969 8 16.898438 8 16 C 8 11.601563 11.601563 8 16 8 C 16.175781 8 16.359375 8.019531 16.53125 8.03125 L 14.09375 10.5 L 15.5 11.90625 L 19.71875 7.71875 L 20.40625 7 L 19.71875 6.28125 Z M 25.09375 11.90625 L 23.59375 13.40625 C 23.894531 14.207031 24 15.101563 24 16 C 24 20.398438 20.398438 24 16 24 C 15.824219 24 15.640625 23.980469 15.46875 23.96875 L 17.90625 21.5 L 16.5 20.09375 L 12.28125 24.28125 L 11.59375 25 L 12.28125 25.71875 L 16.5 29.90625 L 17.90625 28.5 L 15.40625 25.96875 C 15.601563 25.980469 15.804688 26 16 26 C 21.5 26 26 21.5 26 16 C 26 14.5 25.695313 13.105469 25.09375 11.90625 Z "></path>
-      </svg>
-    </span>
-    <!--<input type="button" class="api" value="grid.addState(…)" onclick="callApi('addState', 'state', 'State has been added')"
-           title="addState() assigns the members of the state object defined below to grid.properties *without* clearing it first.">-->
-    <input type="button" class="api" value="grid.setState(…)" onclick="callApi('state', 'State has been set')"
-     title="setState() deletes all grid.properites’s members and then assigns the members of the state object defined below to it.">
+    <span id="reset-state" class="reset-button" title="Reset this state object to default. (This icon is only enabled when state has been edited.)"></span>
+    <!--<input type="button" class="api" value="grid.addState(…)" onclick="callApi('addState', 'state', 'State has been added')" title="addState() assigns the members of the state object defined below to grid.properties *without* clearing it first.">-->
+    <input type="button" class="api" value="grid.setState(…)" onclick="callApi('state', 'State set.')"
+     title="setState() first deletes all members of grid.properties and then assigns the members of the state object defined below to it.">
     <span class="feedback"></span>
     <textarea id="state"></textarea>
   </div>
@@ -62,22 +53,9 @@ grid.setData(…, { schema: [] })">
     <input type="button" value="Locals" class="locals">
     Load: <select id="localizer-dropdown"></select>
 
-    <span id="reset-localizer" class="reset-button" style="cursor:pointer;" title="Reset this localizer to its default. (This icon is only enabled for built in localizers that have been edited.)">
-      <svg viewBox="0 0 32 32" version="1.1" width="22" height="22" class="dangerous-button">
-        <path d="M 15.5 2.09375 L 14.09375 3.5 L 16.59375 6.03125 C 16.394531 6.019531 16.203125 6 16 6 C 10.5 6 6 10.5 6 16 C 6 17.5 6.304688 18.894531 6.90625 20.09375 L 8.40625 18.59375 C 8.207031 17.792969 8 16.898438 8 16 C 8 11.601563 11.601563 8 16 8 C 16.175781 8 16.359375 8.019531 16.53125 8.03125 L 14.09375 10.5 L 15.5 11.90625 L 19.71875 7.71875 L 20.40625 7 L 19.71875 6.28125 Z M 25.09375 11.90625 L 23.59375 13.40625 C 23.894531 14.207031 24 15.101563 24 16 C 24 20.398438 20.398438 24 16 24 C 15.824219 24 15.640625 23.980469 15.46875 23.96875 L 17.90625 21.5 L 16.5 20.09375 L 12.28125 24.28125 L 11.59375 25 L 12.28125 25.71875 L 16.5 29.90625 L 17.90625 28.5 L 15.40625 25.96875 C 15.601563 25.980469 15.804688 26 16 26 C 21.5 26 26 21.5 26 16 C 26 14.5 25.695313 13.105469 25.09375 11.90625 Z "></path>
-      </svg>
-    </span>
+    <span id="reset-localizer" class="reset-button" title="Reset this localizer to its default. (This icon is only enabled for built in localizers that have been edited.)"></span>
 
-    <span id="delete-localizer" title="Delete this localizer. (This icon only appears for custom localizers you added yourself.)">
-      <svg viewBox="0 0 12 16" version="1.1" width="12" height="16" class="dangerous-button">
-        <path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path>
-      </svg>
-    </span>
-
-    <!--    <input id="reset-localizer" type="button" value="Reset" class="danger"
-         title="Reset this localizer to its default. (This button only appears for localizers with workbench-supplied defaults.)">
-        <input id="delete-localizer" type="button" value="Delete" class="danger"
-               title="Delete this localizer. (This button only appears for custom localizers you added yourself.)">-->
+    <span id="delete-localizer" class="delete-button" title="Delete this localizer. (This icon only appears for custom localizers you added yourself.)"></span>
 
     <input type="button" class="api" value="grid.localization.add(…)">
     <span class="feedback">Saved</span>
@@ -88,21 +66,27 @@ grid.setData(…, { schema: [] })">
     <input type="button" value="Locals" class="locals">
     Load: <select id="editor-dropdown"></select>
 
-    <span id="reset-editor" class="reset-button" title="Reset this cell editor to its default. (This icon is only enabled for built in cell editors that have been edited.)">
-      <svg viewBox="0 0 32 32" version="1.1" width="22" height="22" class="dangerous-button">
-        <path d="M 15.5 2.09375 L 14.09375 3.5 L 16.59375 6.03125 C 16.394531 6.019531 16.203125 6 16 6 C 10.5 6 6 10.5 6 16 C 6 17.5 6.304688 18.894531 6.90625 20.09375 L 8.40625 18.59375 C 8.207031 17.792969 8 16.898438 8 16 C 8 11.601563 11.601563 8 16 8 C 16.175781 8 16.359375 8.019531 16.53125 8.03125 L 14.09375 10.5 L 15.5 11.90625 L 19.71875 7.71875 L 20.40625 7 L 19.71875 6.28125 Z M 25.09375 11.90625 L 23.59375 13.40625 C 23.894531 14.207031 24 15.101563 24 16 C 24 20.398438 20.398438 24 16 24 C 15.824219 24 15.640625 23.980469 15.46875 23.96875 L 17.90625 21.5 L 16.5 20.09375 L 12.28125 24.28125 L 11.59375 25 L 12.28125 25.71875 L 16.5 29.90625 L 17.90625 28.5 L 15.40625 25.96875 C 15.601563 25.980469 15.804688 26 16 26 C 21.5 26 26 21.5 26 16 C 26 14.5 25.695313 13.105469 25.09375 11.90625 Z "></path>
-      </svg>
-    </span>
+    <span id="reset-editor" class="reset-button" title="Reset this cell editor to its default. (This icon is only enabled for built in cell editors that have been edited.)"></span>
 
-    <span id="delete-editor" title="Delete this cell editor. (This icon is only enabled for custom cell editors you added yourself.)">
-      <svg viewBox="0 0 12 16" version="1.1" width="12" height="16" class="dangerous-button">
-        <path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path>
-      </svg>
-    </span>
+    <span id="delete-editor" class="delete-button" title="Delete this cell editor. (This icon is only enabled for custom cell editors you added yourself.)"></span>
 
     <input type="button" class="api" value="grid.cellEditors.add(…)">
     <span class="feedback">Saved</span>
     <textarea id="editor-script"></textarea>
+  </div>
+
+  <div style="background-color:#dfd" name="Scrollbars">
+    <span id="reset-scrollbars" class="reset-button" title="Reset scrollbars stylesheet to default (just comments and selectors with no styles). (This icon is only enabled when the stylesheet has been edited.)"></span>
+
+    <label title='Checking this will disable the default scrollbars stylesheet loaded by the finbars module into the DOM (&lt;style id="injected-stylesheet-finbar-base"&gt;…&lt;/style&gt;). In this case your stylesheet must specify the finbars style rules in full, rather than merely modify them.'>
+      <input type="checkbox" style="margin-left:2em" onclick="document.getElementById('injected-stylesheet-finbar-base').disabled=this.checked">
+      <a target="github" href="https://github.com/fin-hypergrid/finbars/blob/master/src/finbars.css">finbars.css</a> replacement
+    </label>
+
+    <span style="float:right;vertical-align:bottom;font-size:smaller">(<a target="github" href="https://github.com/fin-hypergrid/build/blob/master/demo/formatter-workbench/index.js#L508-L522">code</a>)</span>
+    <input type="button" class="api" value="injectCSS('custom', …)" onclick="callApi('scrollbars', 'Stylesheet injected.')">
+    <span class="feedback"></span>
+    <textarea id="scrollbars"></textarea>
   </div>
 
   <div style="background-color:#aaa" name="Settings">
