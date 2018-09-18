@@ -1,0 +1,233 @@
+[1mdiff --git a/demo/formatter-workbench/defaults/cell-editors.js b/demo/formatter-workbench/defaults/cell-editors.js[m
+[1mindex 9597769..9a3f478 100644[m
+[1m--- a/demo/formatter-workbench/defaults/cell-editors.js[m
+[1m+++ b/demo/formatter-workbench/defaults/cell-editors.js[m
+[36m@@ -14,7 +14,7 @@[m [mmodule.exports = Textfield.extend('Trend', {[m
+         '  <input type="text" lang="{{locale}}" style="background-color:transparent; width:77%; text-align:right; border:0; padding:0; outline:0; font:inherit; margin-right: -1px;' +[m
+         '{{style}}"><span>' + UP + '</span>',[m
+         '</div>'[m
+[31m-    ].join('\\n'),[m
+[32m+[m[32m    ].join('\n'),[m
+ [m
+     initialize: function() {[m
+         this.input = this.el.querySelector('input');[m
+[1mdiff --git a/demo/formatter-workbench/defaults/localizers.js b/demo/formatter-workbench/defaults/localizers.js[m
+[1mindex 36f4714..9ebd730 100644[m
+[1m--- a/demo/formatter-workbench/defaults/localizers.js[m
+[1m+++ b/demo/formatter-workbench/defaults/localizers.js[m
+[36m@@ -24,7 +24,7 @@[m [mmodule.exports = {[m
+         return Math.abs(value).toFixed(2) + (value < 0 ? '⬇' : '⬆');[m
+     },[m
+     parse: function(str) {[m
+[31m-        var m = str.match(/^((\\+?|-)(\\d+(\\.(\\d+)?)?|\\.\\d+)(⬆?|⬇))$/);[m
+[32m+[m[32m        var m = str.match(/^((\+?|-)(\d+(\.(\d+)?)?|\.\d+)(⬆?|⬇))$/);[m
+ [m
+         if (m) {[m
+             switch (m[2] + m[6]) {[m
+[36m@@ -41,7 +41,7 @@[m [mmodule.exports = {[m
+ // --- snip ---[m
+ 'use strict';[m
+ [m
+[31m-var footInchPattern = /^\\s*((((\\d+)')?\\s*((\\d+)")?)|\\d+)\\s*$/;[m
+[32m+[m[32mvar footInchPattern = /^\s*((((\d+)')?\s*((\d+)")?)|\d+)\s*$/;[m
+ [m
+ module.exports = {[m
+     name: 'ft-in',[m
+[36m@@ -49,7 +49,7 @@[m [mmodule.exports = {[m
+         value = Math.round(value);[m
+         if (value != null) {[m
+             var feet = Math.floor(value / 12);[m
+[31m-            value = (feet ? feet + '\\'' : '') + ' ' + (value % 12) + '"';[m
+[32m+[m[32m            value = (feet ? feet + '\'' : '') + ' ' + (value % 12) + '"';[m
+         } else {[m
+             value = null;[m
+         }[m
+[36m@@ -88,12 +88,12 @@[m [mmodule.exports = {[m
+     },[m
+ [m
+     invalid: function(hhmm) {[m
+[31m-        return !/^([01]?[1-9]|2[0-3]):[0-5]\\d$/i.test(hhmm); // 23:59 max[m
+[32m+[m[32m        return !/^([01]?[1-9]|2[0-3]):[0-5]\d$/i.test(hhmm); // 23:59 max[m
+     },[m
+ [m
+     // returns number of minutes from formatted string[m
+     parse: function(hhmm) {[m
+[31m-        var parts = hhmm.match(/^(\\d+):(\\d{2})$/i);[m
+[32m+[m[32m        var parts = hhmm.match(/^(\d+):(\d{2})$/i);[m
+         var value = Number(parts[1]) * 60 + Number(parts[2]);[m
+         return value;[m
+     }[m
+[36m@@ -115,12 +115,12 @@[m [mmodule.exports = {[m
+     },[m
+ [m
+     invalid: function(hhmmAmPm) {[m
+[31m-        return !/^(0?[1-9]|1[0-2]):[0-5]\\d\\s+(AM|PM)$/i.test(hhmmAmPm); // 12:59 max[m
+[32m+[m[32m        return !/^(0?[1-9]|1[0-2]):[0-5]\d\s+(AM|PM)$/i.test(hhmmAmPm); // 12:59 max[m
+     },[m
+ [m
+     // returns number of minutes from formatted string[m
+     parse: function(hhmmAmPm) {[m
+[31m-        var parts = hhmmAmPm.match(/^(\\d+):(\\d{2})\\s+(AM|PM)$/i);[m
+[32m+[m[32m        var parts = hhmmAmPm.match(/^(\d+):(\d{2})\s+(AM|PM)$/i);[m
+         var hours = parts[1] === '12' ? 0 : Number(parts[1]);[m
+         var minutes = Number(parts[2]);[m
+         var value = hours * 60 + minutes;[m
+[1mdiff --git a/demo/formatter-workbench/index.js b/demo/formatter-workbench/index.js[m
+[1mindex e2acce9..a0cef2a 100644[m
+[1m--- a/demo/formatter-workbench/index.js[m
+[1m+++ b/demo/formatter-workbench/index.js[m
+[36m@@ -225,10 +225,10 @@[m [mwindow.onload = function() {[m
+         var dropdown = document.getElementById(type + '-dropdown');[m
+         var name = dropdown.value;[m
+         if (!isDisabled(this) && confirm('Delete the "' + name + '" ' + type + '?')) {[m
+[32m+[m[32m            localStorage.removeItem(type + '_' + name);[m
+             dropdown.options.remove(dropdown.selectedIndex);[m
+             dropdown.selectedIndex = 0; // "(New)"[m
+             dropdown.onchange();[m
+[31m-            localStorage.removeItem(type + '_' + name);[m
+         }[m
+     }[m
+ [m
+[36m@@ -318,6 +318,7 @@[m [mwindow.onload = function() {[m
+ [m
+         addButtonEl.onclick = function() {[m
+             save(scriptEl.value, dropdownEl);[m
+[32m+[m[32m            name = dropdownEl.value;[m
+             grid.repaint();[m
+         };[m
+     }[m
+[36m@@ -327,12 +328,14 @@[m [mwindow.onload = function() {[m
+         var deleteEl = document.getElementById('delete-' + type);[m
+ [m
+         if (name) {[m
+[31m-            var defaultScript = name && getDefaultScript(type, name);[m
+[32m+[m[32m            var defaultScript = getDefaultScript(type, name);[m
+             var editedScript = document.getElementById(type + '-script').value;[m
+             var alteredFromDefault = defaultScript && defaultScript !== editedScript;[m
+[31m-[m
+             resetEl.firstElementChild.classList.toggle('disabled', !alteredFromDefault);[m
+[31m-            deleteEl.firstElementChild.classList.toggle('disabled', !name || defaultScript);[m
+[32m+[m[32m            deleteEl.firstElementChild.classList.toggle('disabled', !!defaultScript);[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            resetEl.firstElementChild.classList.add('disabled');[m
+[32m+[m[32m            deleteEl.firstElementChild.classList.add('disabled');[m
+         }[m
+     }[m
+ [m
+[36m@@ -416,7 +419,7 @@[m [mwindow.onload = function() {[m
+             grid.localization.add(localizer);[m
+         } catch (err) {[m
+             console.error(err);[m
+[31m-            alert(err + '\n\nAvailable locals:\n\tmodule');[m
+[32m+[m[32m            alert(err + '\n\nAvailable locals:\nmodule');[m
+             return;[m
+         }[m
+ [m
+[1mdiff --git a/demo/formatter-workbench/tutorial/Table of Contents.html b/demo/formatter-workbench/tutorial/Table of Contents.html[m
+[1mindex 87e9c04..ce2b4cd 100644[m
+[1m--- a/demo/formatter-workbench/tutorial/Table of Contents.html[m	
+[1m+++ b/demo/formatter-workbench/tutorial/Table of Contents.html[m	
+[36m@@ -40,58 +40,58 @@[m
+     }[m
+   </style>[m
+   <script>[m
+[31m-      window.addEventListener('load', function() {[m
+[31m-        var isJSON = /^[[{]/;[m
+[32m+[m[32m  window.addEventListener('load', function() {[m
+[32m+[m[32m      var isJSON = /^[[{]/;[m
+ [m
+[31m-        ajax('table-of-contents.json', function(toc) {[m
+[31m-              var n = 1;[m
+[31m-              walk(document.body, [toc]);[m
+[31m-              document.body.addEventListener('click', function(e) {[m
+[31m-                  var li = e.path.find(function(el) { return el.tagName === 'LI'; });[m
+[31m-                  if (li) {[m
+[31m-                      var pageNumber = li.lastElementChild.innerText, path = '';[m
+[31m-                      window.top.tutorial.page(pageNumber, path);[m
+[31m-                  }[m
+[31m-              });[m
+[31m-              function walk(parentEl, list) {[m
+[31m-                  list.forEach(function(filename) {[m
+[31m-                      if (Array.isArray(filename)) {[m
+[31m-                          var ul = document.createElement('ul');[m
+[31m-                          parentEl.appendChild(ul);[m
+[31m-                          walk(ul, filename);[m
+[31m-                      } else {[m
+[31m-                          filename = filename.substr(0, filename.length - 5);[m
+[31m-                          if (filename !== 'Table of Contents') {[m
+[31m-                              var li = document.createElement('li');[m
+[31m-                              li.innerHTML = '<span>' +[m
+[31m-                                  filename.replace(/\.html$/, '') +[m
+[31m-                                  '</span><span class="p">' + n + '</span>';[m
+[31m-                              parentEl.appendChild(li);[m
+[31m-                          }[m
+[31m-                          n += 1;[m
+[31m-                      }[m
+[31m-                  });[m
+[32m+[m[32m      ajax('table-of-contents.json', function(toc) {[m
+[32m+[m[32m          var n = 1;[m
+[32m+[m[32m          walk(document.body, [toc]);[m
+[32m+[m[32m          document.body.addEventListener('click', function(e) {[m
+[32m+[m[32m              var li = e.path.find(function(el) { return el.tagName === 'LI'; });[m
+[32m+[m[32m              if (li) {[m
+[32m+[m[32m                  var pageNumber = li.lastElementChild.innerText, path = '';[m
+[32m+[m[32m                  window.top.tutorial.page(pageNumber, path);[m
+               }[m
+           });[m
+[31m-[m
+[31m-          function ajax(url, callback) {[m
+[31m-              var httpRequest = new XMLHttpRequest();[m
+[31m-              httpRequest.open('GET', url, true);[m
+[31m-              httpRequest.onreadystatechange = function() {[m
+[31m-                  if ([m
+[31m-                      httpRequest.readyState === 4 && // HTTP_STATE_DONE[m
+[31m-                      httpRequest.status === 200 // HTTP_STATUS_OK[m
+[31m-                  ) {[m
+[31m-                      var data = httpRequest.responseText;[m
+[31m-                      if (/\.json$/i.test(url) && isJSON.test(data)) {[m
+[31m-                          data = JSON.parse(data);[m
+[32m+[m[32m          function walk(parentEl, list) {[m
+[32m+[m[32m              list.forEach(function(filename) {[m
+[32m+[m[32m                  if (Array.isArray(filename)) {[m
+[32m+[m[32m                      var ul = document.createElement('ul');[m
+[32m+[m[32m                      parentEl.appendChild(ul);[m
+[32m+[m[32m                      walk(ul, filename);[m
+[32m+[m[32m                  } else {[m
+[32m+[m[32m                      filename = filename.substr(0, filename.length - 5);[m
+[32m+[m[32m                      if (filename !== 'Table of Contents') {[m
+[32m+[m[32m                          var li = document.createElement('li');[m
+[32m+[m[32m                          li.innerHTML = '<span>' +[m
+[32m+[m[32m                              filename.replace(/\.html$/, '') +[m
+[32m+[m[32m                              '</span><span class="p">' + n + '</span>';[m
+[32m+[m[32m                          parentEl.appendChild(li);[m
+                       }[m
+[31m-                      callback(data);[m
+[32m+[m[32m                      n += 1;[m
+                   }[m
+[31m-              };[m
+[31m-              httpRequest.send(null);[m
+[32m+[m[32m              });[m
+           }[m
+       });[m
+[32m+[m
+[32m+[m[32m      function ajax(url, callback) {[m
+[32m+[m[32m          var httpRequest = new XMLHttpRequest();[m
+[32m+[m[32m          httpRequest.open('GET', url, true);[m
+[32m+[m[32m          httpRequest.onreadystatechange = function() {[m
+[32m+[m[32m              if ([m
+[32m+[m[32m                  httpRequest.readyState === 4 && // HTTP_STATE_DONE[m
+[32m+[m[32m                  httpRequest.status === 200 // HTTP_STATUS_OK[m
+[32m+[m[32m              ) {[m
+[32m+[m[32m                  var data = httpRequest.responseText;[m
+[32m+[m[32m                  if (/\.json$/i.test(url) && isJSON.test(data)) {[m
+[32m+[m[32m                      data = JSON.parse(data);[m
+[32m+[m[32m                  }[m
+[32m+[m[32m                  callback(data);[m
+[32m+[m[32m              }[m
+[32m+[m[32m          };[m
+[32m+[m[32m          httpRequest.send(null);[m
+[32m+[m[32m      }[m
+[32m+[m[32m  });[m
+   </script>[m
+ </head>[m
+ <body>[m

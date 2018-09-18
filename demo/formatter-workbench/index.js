@@ -2,58 +2,22 @@
 
 var grid, tabBar, tutorial, callApi;
 
-var tutTOC = [
-    'Table of Contents.html',
-    'Welcome.html',
-    'The Workench Interface.html',
-    [
-        'The Hypergrid Section.html',
-        'The Editor Section.html',
-        'The Tutorial Section.html'
-    ],
-    'The Data tab.html',
-    [
-        'Activity D-1 - Edit a cell value in the grid.html',
-        'Activity D-2 - Edit a cell value in the Data editor.html',
-        'Activity D-3 - Add a row in the Data editor.html'
-    ],
-    'The State tab.html',
-    [
-        'Activity S-1 - Edit a grid property',
-        'Properties Basics.html',
-        'Activity S-2 - Edit a column property.html'
-    ],
-    'The Localizers Tab.html',
-    [
-        'Activity S-3 - Bind a cell to a localizer.html',
-        'Adding a new localizer.html',
-        'Activity L-1 - Create a localizer.html'
-    ],
-    'The Cell Editors tab.html',
-    [
-        'Activity CE-1 - Edit a cell without a localizer.html',
-        'Activity CE-2 - Edit a cell with a localizer.html'
-    ],
-    'Validation.html',
-    [
-        'The parse() method.html',
-        'The invalid() method.html',
-        'Activity CE-3 - Returning parsing errors.html'
-    ]
-];
-
 window.onload = function() {
     var NEW = '(New)';
     var isCamelCase = /[a-z][A-Z]/;
     var isJSON = /^[[{]/;
+    var snip = '\n// --- snip ---\n';
     var saveFuncs = {
         editor: saveCellEditor,
         localizer: saveLocalizer
     };
-    window.defaults = {
+    var defaults = {
         data: '../data/four-stocks.json',
         state: 'defaults/state.json',
-        scrollbars: 'defaults/scrollbars.css'
+        scrollbars: 'defaults/scrollbars.css',
+        localizer: 'defaults/localizers.js',
+        editor: 'defaults/cell-editors.js',
+        toc: 'tutorial/table-of-contents.json'
     };
 
     Array.prototype.forEach.call(document.getElementsByClassName('reset-button'), function(el) {
@@ -76,8 +40,8 @@ window.onload = function() {
 
         var pagerOptions = {path: 'tutorial/', toc: []};
 
-        // flatten the hierarchical tutTOC into pagerOptions.toc
-        walk(tutTOC);
+        // flatten the hierarchical defaults.toc into pagerOptions.toc
+        walk(defaults.toc);
         function walk(list) {
             list.forEach(function (item) {
                 if (Array.isArray(item)) {
@@ -103,9 +67,8 @@ window.onload = function() {
         callApi('data'); // inits both 'data' and 'state' editors
         callApi('scrollbars');
 
-        Object.keys(scripts).forEach(function(key) {
-            initObjectEditor(key);
-        });
+        initObjectEditor('localizer');
+        initObjectEditor('editor');
 
         document.getElementById('reset-all').onclick = function() {
             if (confirm('Clear localStorage and reload?\n\nThis will reset all tabs to their default values, removing all edits, including new custom localizers and custom cell editors.')) {
@@ -156,7 +119,7 @@ window.onload = function() {
     }
 
     function getFiles(finish) {
-        var keys = Object.keys(defaults)
+        var keys = Object.keys(defaults);
         var callbacks = keys.length;
         keys.forEach(function(key) {
             ajax(defaults[key], function(data) {
@@ -177,9 +140,12 @@ window.onload = function() {
                 httpRequest.status === 200 // HTTP_STATUS_OK
             ) {
                 var data = httpRequest.responseText;
-                if (/\.json$/i.test(url) && isJSON.test(data)) {
+                if (/\.json$/.test(url) && isJSON.test(data)) {
                     data = JSON.parse(data);
+                } else if (/\.js$/.test(url) && data.indexOf(snip) > 0) {
+                    data = data.split(snip);
                 }
+
                 callback(data);
             }
         };
@@ -259,10 +225,10 @@ window.onload = function() {
         var dropdown = document.getElementById(type + '-dropdown');
         var name = dropdown.value;
         if (!isDisabled(this) && confirm('Delete the "' + name + '" ' + type + '?')) {
+            localStorage.removeItem(type + '_' + name);
             dropdown.options.remove(dropdown.selectedIndex);
             dropdown.selectedIndex = 0; // "(New)"
             dropdown.onchange();
-            localStorage.removeItem(type + '_' + name);
         }
     }
 
@@ -300,7 +266,7 @@ window.onload = function() {
             newScript;
 
         // STEP 1: Save default scripts to local storage not previously saved
-        scripts[type].map(extractName).sort().forEach(function(name) {
+        defaults[type].map(extractName).sort().forEach(function(name) {
             var script = getDefaultScript(type, name);
             if (name === NEW) {
                 dropdownEl.add(new Option(name));
@@ -352,6 +318,7 @@ window.onload = function() {
 
         addButtonEl.onclick = function() {
             save(scriptEl.value, dropdownEl);
+            name = dropdownEl.value;
             grid.repaint();
         };
     }
@@ -361,17 +328,19 @@ window.onload = function() {
         var deleteEl = document.getElementById('delete-' + type);
 
         if (name) {
-            var defaultScript = name && getDefaultScript(type, name);
+            var defaultScript = getDefaultScript(type, name);
             var editedScript = document.getElementById(type + '-script').value;
             var alteredFromDefault = defaultScript && defaultScript !== editedScript;
-
             resetEl.firstElementChild.classList.toggle('disabled', !alteredFromDefault);
-            deleteEl.firstElementChild.classList.toggle('disabled', !name || defaultScript);
+            deleteEl.firstElementChild.classList.toggle('disabled', !!defaultScript);
+        } else {
+            resetEl.firstElementChild.classList.add('disabled');
+            deleteEl.firstElementChild.classList.add('disabled');
         }
     }
 
     function getDefaultScript(type, name) {
-        return scripts[type].find(isScriptByName.bind(null, name));
+        return defaults[type].find(isScriptByName.bind(null, name));
     }
 
     function isScriptByName(name, script) {
@@ -450,7 +419,7 @@ window.onload = function() {
             grid.localization.add(localizer);
         } catch (err) {
             console.error(err);
-            alert(err + '\n\nAvailable locals:\n\tmodule');
+            alert(err + '\n\nAvailable locals:\nmodule');
             return;
         }
 
