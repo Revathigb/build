@@ -3,9 +3,9 @@
   "Welcome.html",
   "The Workench Interface.html",
   [
-    "The Hypergrid Section.html",
-    "The Editor Section.html",
-    "The Tutorial Section.html"
+    "The Hypergrid.html",
+    "The Editor tab set.html",
+    "The Tutorial tab set.html"
   ],
   "The Data tab.html",
   [
@@ -35,5 +35,10 @@
     "The parse() method.html",
     "The invalid() method.html",
     "Activity CE-3 - Returning parsing errors.html"
+  ],
+  "The Scrollbars tab.html",
+  [
+    "Styling the scrollbars.html",
+    "Positioning the scrollbars.html"
   ]
 ]

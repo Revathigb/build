@@ -221,8 +221,29 @@ span.tab {
 span.tab:hover {
     box-shadow: 0.15em 0.15em 0.3em #666;
 }
+span.tag:before {
+    content: '<';
+}
+span.close-tag:before {
+    content: '</';
+}
+span.tag:after, span.close-tag:after {
+    content: '>'
+}
 svg.dangerous-button {
      color: #cb2431;
      fill: currentColor;
      vertical-align: middle;
- }
+}
+span.macOS {
+    font-family: helvetica;
+    font-size: smaller;
+}
+span.macOS:before {
+    content: 'mac';
+
+}
+span.macOS:after {
+    font-weight: bold;
+    content: 'OS'
+}
