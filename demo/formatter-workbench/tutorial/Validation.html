@@ -20,7 +20,7 @@ Validation is the responsibility of the <code>localizer.parse</code> method.
     format: function(s) { return s + '&deg;' },
     parse: function(s) { return parseInt(s, 10); }
 }</pre>
-The input is assumed to be an integer followed by a degrees symbol (&deg;). This localizer’s simple <code>parse</code> method uses <code>parseInt</code>, which (as you may know) parses <em>until</em> it encounters a character it doesn't understand and then returns whatever it has so far, without complaint. When <code>parseInt</code> sees the degrees symbol, it stops parsing. The result is that it returns the integer part. This seems to be what we want.
+The input is assumed to be an integer followed by a degrees symbol (&deg;). This localizer’s simple <code>parse</code> method uses <code>parseInt</code>, which (as you may know) parses <em>until</em> it encounters a character it doesn’t understand and then returns whatever it has so far, without complaint. When <code>parseInt</code> sees the degrees symbol, it stops parsing. The result is that it returns the integer part. This seems to be what we want.
 
 <p>However, <em>this is insufficient validation!</em> It works well for <em>valid</em> inputs, but does not reject invalid inputs (which after all is what validation is all about). Specifically:</p>
 <ul>

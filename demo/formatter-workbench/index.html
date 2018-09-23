@@ -7,10 +7,11 @@
 
   <script src='https://fin-hypergrid.github.io/core/3.0.2/build/fin-hypergrid.js'></script>
 
+  <script src="https://joneit.github.io/get-smart/1.0.2/build/get-smart.js"></script>
   <script src="index.js"></script>
 
   <!--<script src="../../../curvy-tabs/build/curvy-tabs.js"></script>-->
-  <script src="https://joneit.github.io/curvy-tabs/2.3.1/build/curvy-tabs.js"></script>
+  <script src="https://joneit.github.io/curvy-tabs/2.3.2/build/curvy-tabs.js"></script>
 
   <!--<script src="../../../curvy-tabs-pager/build/curvy-tabs-pager.js"></script>-->
   <script src="https://joneit.github.io/curvy-tabs-pager/2.0.1/build/curvy-tabs-pager.js"></script>
@@ -27,8 +28,8 @@
 <div id="hypergrid" style="height:145px; width:calc(50% - 8px)"></div>
 
 <div id="editors" class="curvy-tabs-container" style="position:absolute; height:calc(100% - 250px); width:calc(50% - 16px); bottom:8px;">
-  <div style="background-color:#dff" name="Data">
-    <span id="reset-data" class="reset-button" title="Reset data to default. (This icon is only enabled when data have been edited.)"></span>
+  <div style="background-color:#dff; overflow:hidden" name="Data">
+    <span id="reset-data" class="reset-button danger" title="Reset data to default. (This icon is only enabled when data have been edited.)"></span>
     <input type="button" class="api" value="grid.setData(…)" onclick="callApi('data', 'Data set.')"
      title="Note: Actually called with options in a 2nd parameter to reset schema on every call:
 grid.setData(…, { schema: [] })">
@@ -36,8 +37,8 @@ grid.setData(…, { schema: [] })">
     <textarea id="data"></textarea>
   </div>
 
-  <div style="background-color:#fdf" name="State">
-    <span id="reset-state" class="reset-button" title="Reset this state object to default. (This icon is only enabled when state has been edited.)"></span>
+  <div style="background-color:#fdf; overflow:hidden" name="State">
+    <span id="reset-state" class="reset-button danger" title="Reset this state object to default. (This icon is only enabled when state has been edited.)"></span>
     <!--<input type="button" class="api" value="grid.addState(…)" onclick="callApi('addState', 'state', 'State has been added')" title="addState() assigns the members of the state object defined below to grid.properties *without* clearing it first.">-->
     <input type="button" class="api" value="grid.setState(…)" onclick="callApi('state', 'State set.')"
      title="setState() first deletes all members of grid.properties and then assigns the members of the state object defined below to it.">
@@ -45,38 +46,39 @@ grid.setData(…, { schema: [] })">
     <textarea id="state"></textarea>
   </div>
 
-  <div style="background-color:#ffd" name="Localizers">
+  <div style="background-color:#ffd; overflow:hidden" name="Localizers">
     <input type="button" value="Locals" class="locals">
     Load: <select id="localizer-dropdown"></select>
 
-    <span id="reset-localizer" class="reset-button" title="Reset this localizer to its default. (This icon is only enabled for built in localizers that have been edited.)"></span>
+    <span id="reset-localizer" class="reset-button danger" title="Reset this localizer to its default. (This icon is only enabled for built in localizers that have been edited.)"></span>
 
-    <span id="delete-localizer" class="delete-button" title="Delete this localizer. (This icon only appears for custom localizers you added yourself.)"></span>
+    <span id="delete-localizer" class="delete-button danger" title="Delete this localizer. (This icon only appears for custom localizers you added yourself.)"></span>
 
     <input type="button" class="api" value="grid.localization.add(…)">
     <span class="feedback">Saved</span>
     <textarea id="localizer-script"></textarea>
   </div>
 
-  <div style="background-color:#ddf" name="Cell Editors">
+  <div style="background-color:#ddf; overflow:hidden" name="Cell Editors">
     <input type="button" value="Locals" class="locals">
     Load: <select id="editor-dropdown"></select>
 
-    <span id="reset-editor" class="reset-button" title="Reset this cell editor to its default. (This icon is only enabled for built in cell editors that have been edited.)"></span>
+    <span id="reset-editor" class="reset-button danger" title="Reset this cell editor to its default. (This icon is only enabled for built in cell editors that have been edited.)"></span>
 
-    <span id="delete-editor" class="delete-button" title="Delete this cell editor. (This icon is only enabled for custom cell editors you added yourself.)"></span>
+    <span id="delete-editor" class="delete-button danger" title="Delete this cell editor. (This icon is only enabled for custom cell editors you added yourself.)"></span>
 
     <input type="button" class="api" value="grid.cellEditors.add(…)">
     <span class="feedback">Saved</span>
     <textarea id="editor-script"></textarea>
   </div>
 
-  <div style="background-color:#dfd" name="Scrollbars">
-    <span id="reset-scrollbars" class="reset-button" title="Reset scrollbars stylesheet to default (just comments and selectors with no styles). (This icon is only enabled when the stylesheet has been edited.)"></span>
+  <div style="background-color:#dfd; overflow:hidden" name="Scrollbars">
+    <span id="reset-scrollbars" class="reset-button danger" title="Reset scrollbars stylesheet to default (just comments and selectors with no styles). (This icon is only enabled when the stylesheet has been edited.)"></span>
 
     <label title='Checking this will disable the default scrollbars stylesheet loaded by the finbars module into the DOM (&lt;style id="injected-stylesheet-finbar-base"&gt;…&lt;/style&gt;). In this case your stylesheet must specify the finbars style rules in full, rather than merely modify them.'>
       <input type="checkbox" style="margin-left:2em" onclick="document.getElementById('injected-stylesheet-finbar-base').disabled=this.checked">
-      <a target="github" href="https://github.com/fin-hypergrid/finbars/blob/master/src/finbars.css">finbars.css</a> replacement
+      Replace
+      <a target="github" href="https://github.com/fin-hypergrid/finbars/blob/master/src/finbars.css">finbars.css</a>
     </label>
 
     <span style="float:right;vertical-align:bottom;font-size:smaller">(<a target="github" href="https://github.com/fin-hypergrid/build/blob/master/demo/formatter-workbench/index.js#L508-L522">code</a>)</span>
@@ -97,11 +99,11 @@ grid.setData(…, { schema: [] })">
 <div class="divider"></div>
 
 <div id="tutorial" class="curvy-tabs-container" style="position:absolute; height:calc(100% - 58px); width:calc(50% - 12px); bottom:8px; right:8px">
-  <div style="background-color:#f4f4f4" name="Tutorial">
+  <div style="background-color:#f4f4f4; overflow:hidden" name="Tutorial">
     <iframe></iframe>
   </div>
 
-  <div style="background-color:#ffc; display:none" name="Code Snippets">
+  <div style="background-color:#ffc; overflow:hidden; display:none" name="Code Snippets">
     <iframe src="tutorial/blank.html"></iframe>
   </div>
 </div>

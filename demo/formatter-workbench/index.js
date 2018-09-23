@@ -2,155 +2,128 @@
 
 var grid, tabBar, tutorial, callApi;
 
-window.onload = function() {
+window.onload = getSmart.bind(null, {
+    data: '../data/four-stocks.json',
+    state: 'defaults/state.json',
+    scrollbars: 'defaults/scrollbars.css;txt', // ;txt forces get as text rather than style element
+    localizer: 'defaults/localizers.js;snippets', // ;snippets forces get as text snippets array rather excuted code
+    editor: 'defaults/cell-editors.js;snippets',
+    toc: 'defaults/table-of-contents.js',
+    'reset-svg': 'img/reset.svg',
+    'delete-svg': 'img/delete.svg'
+}, function(defaults) {
     var NEW = '(New)';
     var isCamelCase = /[a-z][A-Z]/;
-    var isJSON = /^[[{]/;
-    var snip = '\n// --- snip ---\n';
     var saveFuncs = {
         editor: saveCellEditor,
         localizer: saveLocalizer
     };
-    var defaults = {
-        data: '../data/four-stocks.json',
-        state: 'defaults/state.json',
-        scrollbars: 'defaults/scrollbars.css',
-        localizer: 'defaults/localizers.js',
-        editor: 'defaults/cell-editors.js',
-        toc: 'tutorial/table-of-contents.json'
-    };
 
-    Array.prototype.forEach.call(document.getElementsByClassName('reset-button'), function(el) {
-        el.innerHTML = '<svg viewBox="0 0 32 32" version="1.1" width="22" height="22"><path d="M 15.5 2.09375 L 14.09375 3.5 L 16.59375 6.03125 C 16.394531 6.019531 16.203125 6 16 6 C 10.5 6 6 10.5 6 16 C 6 17.5 6.304688 18.894531 6.90625 20.09375 L 8.40625 18.59375 C 8.207031 17.792969 8 16.898438 8 16 C 8 11.601563 11.601563 8 16 8 C 16.175781 8 16.359375 8.019531 16.53125 8.03125 L 14.09375 10.5 L 15.5 11.90625 L 19.71875 7.71875 L 20.40625 7 L 19.71875 6.28125 Z M 25.09375 11.90625 L 23.59375 13.40625 C 23.894531 14.207031 24 15.101563 24 16 C 24 20.398438 20.398438 24 16 24 C 15.824219 24 15.640625 23.980469 15.46875 23.96875 L 17.90625 21.5 L 16.5 20.09375 L 12.28125 24.28125 L 11.59375 25 L 12.28125 25.71875 L 16.5 29.90625 L 17.90625 28.5 L 15.40625 25.96875 C 15.601563 25.980469 15.804688 26 16 26 C 21.5 26 26 21.5 26 16 C 26 14.5 25.695313 13.105469 25.09375 11.90625 Z "></path></svg>';
-    });
+    function injectSVG(el, svg) {
+        var svgElement = /<svg[^]*<\/svg>/;
+        var match = svg.match(svgElement);
+        if (match) {
+            el.innerHTML = match[0];
+        } else {
+            console.warn('No <svg> markup found.');
+        }
+    }
 
-    Array.prototype.forEach.call(document.getElementsByClassName('delete-button'), function(el) {
-        el.innerHTML = '<svg viewBox="0 0 12 16" version="1.1" width="12" height="16"><path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path></svg>';
+    // Create inline <svg> elements rather than using <img> tag.
+    // This allows us to set the <svg>'s fill and stroke colors with CSS.
+    Object.keys(defaults).filter(function(key) { return /-svg$/.test(key); }).forEach(function(key) {
+        var className = key.replace('svg', 'button');
+        var els = document.getElementsByClassName(className);
+        Array.prototype.forEach.call(els, function(el) {
+            injectSVG(el, defaults[key]);
+        });
     });
 
     tabBar = new CurvyTabs(document.getElementById('editors'));
     tabBar.paint();
 
-    getFiles(init);
+    grid = new fin.Hypergrid();
 
-    function init() {
-        grid = new fin.Hypergrid();
+    initLocalsButtons();
 
-        initLocalsButtons();
+    var pagerOptions = {path: 'tutorial/', toc: []};
 
-        var pagerOptions = {path: 'tutorial/', toc: []};
-
-        // flatten the hierarchical defaults.toc into pagerOptions.toc
-        walk(defaults.toc);
-        function walk(list) {
-            list.forEach(function (item) {
-                if (Array.isArray(item)) {
-                    walk(item);
-                } else {
-                    pagerOptions.toc.push(item);
-                }
-            });
-        }
-
-        // If there is a page number cookie value, use it!
-        var match = document.cookie.match(/\bp=(\d+)/);
-        if (match) {
-            pagerOptions.startPage = match[1];
-        }
-
-        tutorial = new CurvyTabsPager(
-            document.getElementById('page-panel'),
-            new CurvyTabs(document.getElementById('tutorial')),
-            pagerOptions
-        );
-
-        callApi('data'); // inits both 'data' and 'state' editors
-        callApi('scrollbars');
-
-        initObjectEditor('localizer');
-        initObjectEditor('editor');
-
-        document.getElementById('reset-all').onclick = function() {
-            if (confirm('Clear localStorage and reload?\n\nThis will reset all tabs to their default values, removing all edits, including new custom localizers and custom cell editors.')) {
-                localStorage.clear();
-                location.reload();
+    // flatten the hierarchical defaults.toc into pagerOptions.toc
+    walk(defaults.toc);
+    function walk(list) {
+        list.forEach(function (item) {
+            if (Array.isArray(item)) {
+                walk(item);
+            } else {
+                pagerOptions.toc.push(item);
             }
-        };
-
-        grid.addEventListener('fin-after-cell-edit', function(e) {
-            document.getElementById('data').value = stringifyAndUnquoteKeys(grid.behavior.getData());
         });
+    }
 
-        var dragger, divider = document.querySelector('.divider');
-        divider.addEventListener('mousedown', function(e) {
-            dragger = {
-                delta: e.clientY - divider.getBoundingClientRect().top,
-                gridHeight: grid.div.getBoundingClientRect().height,
-                tabHeight: tabBar.container.getBoundingClientRect().height
-            };
+    // If there is a page number cookie value, use it!
+    var match = document.cookie.match(/\bp=(\d+)/);
+    if (match) {
+        pagerOptions.startPage = match[1];
+    }
+
+    tutorial = new CurvyTabsPager(
+        document.getElementById('page-panel'),
+        new CurvyTabs(document.getElementById('tutorial')),
+        pagerOptions
+    );
+
+    callApi('data'); // inits both 'data' and 'state' editors
+    callApi('scrollbars');
+
+    initObjectEditor('localizer');
+    initObjectEditor('editor');
+
+    document.getElementById('reset-all').onclick = function() {
+        if (confirm('Clear localStorage and reload?\n\nThis will reset all tabs to their default values, removing all edits, including new custom localizers and custom cell editors.')) {
+            localStorage.clear();
+            location.reload();
+        }
+    };
+
+    grid.addEventListener('fin-after-cell-edit', function(e) {
+        document.getElementById('data').value = stringifyAndUnquoteKeys(grid.behavior.getData());
+    });
+
+    var dragger, divider = document.querySelector('.divider');
+    divider.addEventListener('mousedown', function(e) {
+        dragger = {
+            delta: e.clientY - divider.getBoundingClientRect().top,
+            gridHeight: grid.div.getBoundingClientRect().height,
+            tabHeight: tabBar.container.getBoundingClientRect().height
+        };
+        e.stopPropagation(); // no other element needs to handle
+    });
+    document.addEventListener('mousemove', function(e) {
+        if (dragger) {
+            var newDividerTop = e.clientY - dragger.delta,
+                oldDividerTop = divider.getBoundingClientRect().top,
+                topDelta = newDividerTop - oldDividerTop,
+                newGridHeight = dragger.gridHeight + topDelta,
+                newTabHeight = dragger.tabHeight - topDelta;
+
+            if (newGridHeight >= 65 && newTabHeight >= 130) {
+                divider.style.borderTopStyle = divider.style.borderTopColor = null; // revert to :active style
+                divider.style.top = newDividerTop + 'px';
+                grid.div.style.height = (dragger.gridHeight = newGridHeight) + 'px';
+                tabBar.container.style.height = (dragger.tabHeight = newTabHeight) + 'px';
+            } else {
+                // force :hover style when out of range even though dragging (i.e., :active)
+                divider.style.borderTopStyle = 'double';
+                divider.style.borderTopColor = '#444';
+            }
+
             e.stopPropagation(); // no other element needs to handle
-        });
-        document.addEventListener('mousemove', function(e) {
-            if (dragger) {
-                var newDividerTop = e.clientY - dragger.delta,
-                    oldDividerTop = divider.getBoundingClientRect().top,
-                    topDelta = newDividerTop - oldDividerTop,
-                    newGridHeight = dragger.gridHeight + topDelta,
-                    newTabHeight = dragger.tabHeight - topDelta;
-
-                if (newGridHeight >= 65 && newTabHeight >= 130) {
-                    divider.style.borderTopStyle = divider.style.borderTopColor = null; // revert to :active style
-                    divider.style.top = newDividerTop + 'px';
-                    grid.div.style.height = (dragger.gridHeight = newGridHeight) + 'px';
-                    tabBar.container.style.height = (dragger.tabHeight = newTabHeight) + 'px';
-                } else {
-                    // force :hover style when out of range even though dragging (i.e., :active)
-                    divider.style.borderTopStyle = 'double';
-                    divider.style.borderTopColor = '#444';
-                }
-
-                e.stopPropagation(); // no other element needs to handle
-                e.preventDefault(); // no other drag effects, please
-            }
-        });
-        document.addEventListener('mouseup', function(e) {
-            dragger = undefined;
-        });
-    }
-
-    function getFiles(finish) {
-        var keys = Object.keys(defaults);
-        var callbacks = keys.length;
-        keys.forEach(function(key) {
-            ajax(defaults[key], function(data) {
-                defaults[key] = data;
-                if (!--callbacks) {
-                    finish();
-                }
-            });
-        });
-    }
-
-    function ajax(url, callback) {
-        var httpRequest = new XMLHttpRequest();
-        httpRequest.open('GET', url, true);
-        httpRequest.onreadystatechange = function() {
-            if (
-                httpRequest.readyState === 4 && // HTTP_STATE_DONE
-                httpRequest.status === 200 // HTTP_STATUS_OK
-            ) {
-                var data = httpRequest.responseText;
-                if (/\.json$/.test(url) && isJSON.test(data)) {
-                    data = JSON.parse(data);
-                } else if (/\.js$/.test(url) && data.indexOf(snip) > 0) {
-                    data = data.split(snip);
-                }
-
-                callback(data);
-            }
-        };
-        httpRequest.send(null);
-    }
+            e.preventDefault(); // no other drag effects, please
+        }
+    });
+    document.addEventListener('mouseup', function(e) {
+        dragger = undefined;
+    });
 
     function callApi(methodName, type, confirmation) {
         // When `methodName` is `undefined` or omitted promote 2nd and 3rd params
@@ -489,4 +462,4 @@ window.onload = function() {
     }
 
     window.callApi = callApi; // for access from index.html `onclick` handlers
-};
+});

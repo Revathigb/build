@@ -87,23 +87,23 @@ input[type=button].danger:active {
 .divider:active {
     border-top: 4px solid #888;
 }
-span.reset-button > svg, span.delete-button > svg {
-    color: #cb2431;
-    fill: currentColor;
-    position: relative;
-}
 span.reset-button > svg {
+    position: relative;
     top: 7px;
 }
 span.delete-button > svg {
+    position: relative;
     top: 3px;
 }
-span.reset-button > svg.disabled, span.delete-button > svg.disabled {
+span.danger > svg {
+    color: #cb2431;
+    fill: currentColor;
+}
+span.danger > svg.disabled {
     color: #aaa;
     cursor: no-drop;
 }
-span.reset-button > svg:not(.disabled):hover, span.delete-button > svg:not(.disabled):hover {
-    color: red;
+span.danger > svg:not(.disabled):hover {
     background-color: yellow;
     border-radius: 1em;
     cursor: pointer;

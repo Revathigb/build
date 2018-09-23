@@ -34,7 +34,7 @@ If you’re not already familiar with <a target="mdn" href="https://developer.mo
   return n;
 }</pre>
 
-Here’s a brute force approach that takes advantage of the fact that <code>Number</code> requires the whole input to be parseable (unlike <code>pareseInt</code>); but then you do need to make sure the user didn't include a fractional part becuase this accepts all number formats, including floating point, but also including exponential notation, and hex and octal. So really not good for validating integers!
+Here’s a brute force approach that takes advantage of the fact that <code>Number</code> requires the whole input to be parseable (unlike <code>pareseInt</code>); but then you do need to make sure the user didn’t include a fractional part becuase this accepts all number formats, including floating point, but also including exponential notation, and hex and octal. So really not good for validating integers!
 
 <pre>function parse(s) {
   var i, j = s.length - 1, n = 0, digit;

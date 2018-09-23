@@ -2,6 +2,9 @@ body {
     margin: 8px;
     font: 11pt/1.4 serif;
 }
+sup {
+    font-size: 70%;
+}
 p:first-child {
     margin-top: 0;
 }
@@ -17,6 +20,9 @@ h1, h2, h3, h4, h5 {
 li {
     margin-top: .65em;
 }
+ol ul li, ol ol li, ul ul li, ul ol li {
+    margin-top: 0;
+}
 pre {
     font: 8pt monospace;
     background-color: #eee;
@@ -31,7 +37,7 @@ span.api-button {
     background-color: grey;
     color: white;
     border-radius: .5em;
-    padding: .33em .66em;
+    padding: .33em .66em .17em;
     margin: 0 2px;
 }
 span.keycap {
@@ -67,7 +73,7 @@ span.button.clickable {
 a.code, code {
     font-family: verdana, monospace;
     font-size: 77%;
-    color: #555;
+    color: #444;
     background-color: #ddd;
     padding: 0 4px;
     border-radius: 4px;
@@ -140,14 +146,18 @@ table.footnote > caption {
     text-align: left;
 }
 table.footnote > caption > div {
-    vertical-align: super;
     width: 6em;
     border-bottom: 1px solid black;
+    margin-bottom: 2px;
+}
+table.footnote > caption > div:before {
+    content: '\0A';
 }
 table.footnote td {
     font-size: smaller;
     text-align: justify;
     vertical-align: top;
+    padding-top: 2px;
 }
 
 /* ACTIVITIES */
@@ -170,9 +180,17 @@ article.activity > section > ol ol > li {
     font-size: 90%;
     margin-top: .25em;
 }
+.observe {
+    background: no-repeat 2px -6px url(img/eye.png);
+    padding-left: 33px;
+}
 .observe:before {
-    content: 'Observe: ';
+    content: 'Observe:';
+    font-weight: bold;
     font-style: italic;
+    color: white;
+    text-shadow: 0 0 4px black, 0 0 4px black, 0 0 4px black, 0 0 4px black;
+    padding-right: 3px;
 }
 article.activity > header:first-child {
     position: relative;
@@ -204,6 +222,8 @@ fieldset > legend {
     padding: .5em 1em .4em;
     border: 1px solid grey;
 }
+
+/* Curvy tabs-like tab */
 span.tab {
     border-top: 1px solid grey;
     border-right: 1px solid grey;
@@ -217,24 +237,25 @@ span.tab {
     text-decoration: none;
     cursor: default;
     white-space: nowrap;
+    user-select: none;
 }
 span.tab:hover {
     box-shadow: 0.15em 0.15em 0.3em #666;
+    cursor: pointer;
 }
-span.tag:before {
+
+/* Tags - use with <span> or <code> tag */
+.tag:before {
     content: '<';
 }
-span.close-tag:before {
+.close-tag:before {
     content: '</';
 }
-span.tag:after, span.close-tag:after {
+.tag:after, .close-tag:after {
     content: '>'
 }
-svg.dangerous-button {
-     color: #cb2431;
-     fill: currentColor;
-     vertical-align: middle;
-}
+
+/* macOS logo - use with empty <span> tag */
 span.macOS {
     font-family: helvetica;
     font-size: smaller;
@@ -246,4 +267,17 @@ span.macOS:before {
 span.macOS:after {
     font-weight: bold;
     content: 'OS'
+}
+
+span.reset-button > svg {
+    position: relative;
+    top: 7px;
+}
+span.delete-button > svg {
+    position: relative;
+    top: 3px;
+}
+span.danger > svg {
+    color: #cb2431;
+    fill: currentColor;
 }

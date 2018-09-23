@@ -29,7 +29,7 @@ To set properties on a column using a state object, for example the <code>prevcl
 }</pre>
 
 <div class="note">
-  <code>columns</code> is a dynamic property (a setter) and actually sets individual column's <code>properties</code> objects.
+  <code>columns</code> is a dynamic property (a setter) and actually sets individual column’s <code>properties</code> objects.
   That is, <code>columns</code> is not an object of grid properties;
   there is no such thing as <code style="text-decoration:line-through">grid.properties.columns</code>.
 </div>
@@ -72,11 +72,11 @@ To set properties on a data row using a state object, for example on the fourth 
 </div>
 
 <h3>Properties cascade</h3>
-Hypergrid's property objects have useful prototype chains. For example:
+Hypergrid’s property objects have useful prototype chains. For example:
 <ul>
   <li>A property set on a specific cell would override the same property set on the cell’s column.</li>
   <li>A property set on a specific column would override the same property set on the grid.</li>
-  <li>A property set on the grid would override the same property set on an active theme or the property's default value.</li>
+  <li>A property set on the grid would override the same property set on an active theme or the property’s default value.</li>
 </ul>
 
 For example, in the following all cells use the <code>currency</code> localizer <em>except</em> cells in column <code>prevclose</code> which use the <code>pct</code> localizer:
