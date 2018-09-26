@@ -19,6 +19,9 @@ window.onload = getSmart.bind(null, {
         localizer: saveLocalizer
     };
 
+    // Append version numbers to <h1> header
+    document.querySelector('body > h1:first-child').innerHTML += ' <sup>(rev. 11)</sup> — Hypergrid <sup>(v' + fin.Hypergrid.prototype.version + ')</sup>';
+
     function injectSVG(el, svg) {
         var svgElement = /<svg[^]*<\/svg>/;
         var match = svg.match(svgElement);
